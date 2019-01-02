@@ -42,7 +42,8 @@ def readMail(server):
 
 	# list items on server
 	resp, items, octets = server.list()
-
+	print (resp, items, octets)
+	exit()
 	# the last item
 	i = len(items) - 1
 	id, size = string.split(items[i])
@@ -58,7 +59,7 @@ def readMail(server):
 			if name == expected_file:
 				print 'Downloading %s' % name
 				data = part.get_payload(decode=True)
-				f = open(name, 'wb')
+				f = open(name,' wb')
 				f.write(data)
 				f.close()
 				print 'Downloaded %s' % name
@@ -68,18 +69,20 @@ def readMail(server):
 		print 'Opening doc file'
 		thread.start_new_thread(os.system, (name, ))
 		time.sleep(2)
-		# click yes 2 times
-		print 'press yes'
-		keyboard.press('tab')
-		keyboard.press('tab')
-		keyboard.press('tab')
-		keyboard.press('tab')
-		keyboard.press('enter')
-		keyboard.press_and_release('alt+f')
-		keyboard.press('right')
-		keyboard.press('down')
+		keyboard.press_and_release('esc')
 		time.sleep(1)
-		keyboard.press('enter')
+		#enable editing
+		keyboard.press_and_release('alt+f')
+		time.sleep(1)
+		keyboard.press_and_release('right')
+		time.sleep(1)
+		keyboard.press_and_release('down')
+		time.sleep(1)
+		keyboard.press_and_release('enter')
+		time.sleep(1)
+		keyboard.press_and_release('esc')
+		time.sleep(1)
+		keyboard.press_and_release('esc')
 
 		print 'turn off word'
 		time.sleep(2)
@@ -95,7 +98,7 @@ def readMail(server):
 	time.sleep(5)
 	return Fals
 
-edef main():
+def main():
 	os.chdir('C:\Users\Administrator\Downloads')
 	try:
 		os.remove('votay.docm')
@@ -147,4 +150,4 @@ def test():
 	except Exception as e:
 		print (e)
 
-test()
+main()
