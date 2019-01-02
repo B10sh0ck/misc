@@ -26,19 +26,19 @@ def login():
 
 	try:
 		# connect to server
-		server = poplib.POP3(SERVER)
+		mailbox = poplib.POP3_SSL(SERVER)
 		 
 		# login
-		server.user(USER)
-		server.pass_(PASSWORD)
+		mailbox.user(USER)
+		mailbox.pass_(PASSWORD)
 	except Exception as ex:
 		print (ex)
 		return None
 
-	return server
+	return mailbox
 
 def readMail(server):
-	expect_file = 'votay.docm'
+	expected_file = 'votay.docm'
 
 	# list items on server
 	resp, items, octets = server.list()
@@ -55,7 +55,7 @@ def readMail(server):
 	for part in msg.walk():
 		if 'application' in part.get_content_type():
 			name = part.get_filename()
-			if name == expect_file:
+			if name == expected_file:
 				print 'Downloading %s' % name
 				data = part.get_payload(decode=True)
 				f = open(name, 'wb')
@@ -71,10 +71,13 @@ def readMail(server):
 		# click yes 2 times
 		print 'press yes'
 		keyboard.press('tab')
-		keyboard.press('enter')
+		keyboard.press('tab')
+		keyboard.press('tab')
 		keyboard.press('tab')
 		keyboard.press('enter')
-
+		keyboard.press_and_release('alt+f')
+		keyboard.press('right')
+		keyboard.press('down')
 		time.sleep(1)
 		keyboard.press('enter')
 
@@ -90,33 +93,33 @@ def readMail(server):
 		return True
 
 	time.sleep(5)
-	return False
+	return Fals
 
-def main():
+edef main():
 	os.chdir('C:\Users\Administrator\Downloads')
 	try:
 		os.remove('votay.docm')
 	except Exception as e:
 		print e
 
-	print "[+] Waiting start command ... "
-	#wait(5)
-	print "[+] Received start command"
+	# print "[+] Waiting start command ... "
+	# #wait(5)
+	# print "[+] Received start command"
 
 	while True:
 		try:
-			server = login()
-			if server:
+			mailbox = login()
+			if mailbox:
 				print 'Login success'
 				print "[+] Receiving expected email"
-				if readMail(server):
-					server.quit()
+				if readMail(mailbox):
+					mailbox.quit()
 					print 'Logged out'
 					break
 				else:
-					print "[+] Email didn't arrive"
+					print "[+] The expected email didn't arrive"
 
-				server.quit()
+				mailbox.quit()
 				print 'Logged out'
 		except:
 			print 'Login failed'
@@ -136,8 +139,8 @@ def main():
 #main()
 def test():
 	try:
-		server = login()
-		if server:
+		mailbox = login()
+		if mailbox:
 			print ("Succeed")
 		else:
 			print ("Failed")
