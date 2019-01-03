@@ -21,18 +21,17 @@ def wait(t):
 	return
 
 def main():
-	path = 'C:/Python27/Script/kb15/'
+	path = '/root/saigon2/KB_MaDoc/2'
 	os.chdir(path)
 
-	print 'Waiting for start command'
-	wait(5)
-	print 'Revc start command'
+	#print 'Waiting for start command'
+	#wait(5)
+	#print 'Revc start command'
 
-	userlist = ['bao@dientap.cnsc', 'thth@dientap.cnsc', 'danh@dientap.cnsc', 'hoang@dientap.cnsc', 'thuy@dientap.cnsc', 'duy@dientap.cnsc', 'khoa@dientap.cnsc', 'vuong@dientap.cnsc', 'bac@dientap.cnsc', 'hieu@dientap.cnsc', 'nguyenvand@dientap.cnsc', 'nguyenvane@dientap.cnsc']
-
+	userlist = ['nhanvien01@dientap.cnsc', 'nhanvien02@dientap.cnsc', 'nhanvien03@dientap.cnsc', 'nhanvien04@dientap.cnsc', 'nhanvien05@dientap.cnsc', 'nhanvien06@dientap.cnsc', 'nhanvien07@dientap.cnsc', 'nhanvien08@dientap.cnsc', 'nhanvien09@dientap.cnsc', 'nhanvien10@dientap.cnsc', 'hieu@dientap.cnsc', 'vuong@dientap.cnsc']
+	#userlist = ['nhanvien05@dientap.cnsc']
 	for user in userlist:
-#		me = 'nguyenvanc@cnsc.com'
-		me = 'nguyenvanh@cnsc.com'
+		me = 'john@dientap.cnsc'
 		you = user
 
 		msg = MIMEMultipart()
@@ -42,11 +41,11 @@ def main():
 		msg['Date'] = formatdate(localtime=True)
 
 		# noi dung email
-		text = 'Gửi các anh/chị thông báo quan trọng đầu năm.'
+		text = 'Hello Friend. \nAre you a 1 or a 0? \nDownload and open the file if you are the 1.'
 		msg.attach(MIMEText(text))
 
 		# attachment file setup.rar
-		file = 'ThongBao.docm'
+		file = 'votay.zip'
 		part = MIMEBase('application', "octet-stream")
 		part.set_payload( open(file,"rb").read() )
 		Encoders.encode_base64(part)
@@ -55,13 +54,13 @@ def main():
 		msg.attach(part)
 
 
-		s = smtplib.SMTP('192.168.100.251')
+		s = smtplib.SMTP_SSL('192.168.220.51')
 		s.login(me, 'Cnsc12345')
 		s.sendmail(me, you, msg.as_string())
 		s.quit()
-		print 'Send to ' + user
+		print 'Sending to ' + user
 		time.sleep(random.randint(1,2))
 
-	print 'Send done'
+	print 'Sent'
 
 main()
