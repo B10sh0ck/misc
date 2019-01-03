@@ -41,7 +41,7 @@ def login():
 
 def unzipFile(name):
 	if name and ('.zip' in name):
-		with zipfile.ZipFile(votay.zip, 'r') as zip_ref:
+		with zipfile.ZipFile(name, 'r') as zip_ref:
 			zip_ref.extractall()
 
 def openFile(name):
@@ -49,20 +49,36 @@ def openFile(name):
 		print 'Opening doc file'
 		thread.start_new_thread(os.system, (name, ))
 		time.sleep(2)
+		keyboard.press_and_release('enter')
+		time.sleep(2)
 		keyboard.press_and_release('esc')
-		time.sleep(1)
+		time.sleep(2)
 		#enable editing
 		keyboard.press_and_release('alt+f')
-		time.sleep(1)
+		time.sleep(2)
 		keyboard.press_and_release('right')
-		time.sleep(1)
+		time.sleep(2)
 		keyboard.press_and_release('down')
-		time.sleep(1)
+		time.sleep(2)
 		keyboard.press_and_release('enter')
-		time.sleep(1)
+		time.sleep(2)
+		keyboard.press_and_release('enter')
+		time.sleep(2)
 		keyboard.press_and_release('esc')
-		time.sleep(1)
+		time.sleep(2)
 		keyboard.press_and_release('esc')
+		time.sleep(2)
+		keyboard.press_and_release('alt+f')
+		time.sleep(2)
+		keyboard.press_and_release('right')
+		time.sleep(2)
+		keyboard.press_and_release('down')
+		time.sleep(2)
+		keyboard.press_and_release('enter')
+		time.sleep(2)
+		keyboard.press_and_release('enter')
+		time.sleep(2)
+		keyboard.press_and_release('enter')
 
 		print 'Turning off word'
 		time.sleep(2)
@@ -86,7 +102,6 @@ def readMail(mailbox):
 
 	name = ''
 	for part in msg.walk():
-		print (part.get_content_type())
 		if 'application' in part.get_content_type():
 			name = part.get_filename()
 			if name == expected_file:
@@ -96,6 +111,9 @@ def readMail(mailbox):
 				f.write(data)
 				f.close()
 				print '%s was downloaded' % name
+				unzipFile(name)
+				name = name.replace('.zip','.docm')
+				openFile(name)	
 				print 'Deleting email'
 				mailbox.dele(id)
 				return True
@@ -113,6 +131,7 @@ def destroy_evidence():
 def main():
 	os.chdir('C:\Users\Administrator\Downloads')
 	try:
+		os.remove('votay.zip')
 		os.remove('votay.docm')
 	except Exception as e:
 		print ("Exception: " + str(e))
@@ -133,16 +152,14 @@ def main():
 					break
 				else:
 					print "[+] The expected email hasn't arrived"
-
-				mailbox.quit()
-				print 'Logged out'
+					mailbox.quit()
+					print 'Logged out'
 		except Exception as e:
 			print ("Login failed: " + str(e))
 			time.sleep(3)
-	unzipFile(name)
-	openFile(name)				
+			
 	# xoa dau vet
-	time.sleep(900)
+	#time.sleep(900)
 	print 'Destroying evidence'
 	destroy_evidence()
 	print 'Done'
