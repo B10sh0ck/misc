@@ -4,7 +4,7 @@ import urllib2 # wait command
 import time # sleep
 import string, random
 import StringIO, rfc822
-from email import parser
+import email.parser
 import thread # execute file
 import keyboard
 
@@ -20,8 +20,8 @@ def wait(t):
 	return
 
 def login():
-	USER = "john@dientap.cnsc"
-	PASSWORD = "Cnsc12345"
+	USER = "nhanvien05@dientap.cnsc"
+	PASSWORD = "41879gY@"
 	SERVER = "192.168.220.51"
 
 	try:
@@ -37,17 +37,25 @@ def login():
 
 	return mailbox
 
-def readMail(server):
+def readMail(mailbox):
 	expected_file = 'votay.docm'
-
 	# list items on server
-	resp, items, octets = server.list()
-	print (resp, items, octets)
-	exit()
-	# the last item
+	resp, items, octets = mailbox.list()
+
+	parser = email.parser.FeedParser()
+	# get id of the newest email
 	i = len(items) - 1
-	id, size = string.split(items[i])
-	msg = [server.retr(id)]
+	id = items[i].split()[0]
+	# get msg of the newest email
+	for msg in mailbox.retr(id)[1]:
+	#msg = mailbox.retr(id)[1]
+		parser.feed(msg + '\n')
+	message = parser.close()
+	payload = message.get_payload(decode = True)
+	print (payload)
+	# print (message)
+	return True
+
 	msg = ["\n".join(mssg[1]) for mssg in msg]
 	msg = [parser.Parser().parsestr(mssg) for mssg in msg]
 	msg = msg[0]
@@ -96,14 +104,14 @@ def readMail(server):
 		return True
 
 	time.sleep(5)
-	return Fals
+	return False
 
 def main():
 	os.chdir('C:\Users\Administrator\Downloads')
 	try:
 		os.remove('votay.docm')
 	except Exception as e:
-		print e
+		print ("Exception: " + str(e))
 
 	# print "[+] Waiting start command ... "
 	# #wait(5)
@@ -114,20 +122,21 @@ def main():
 			mailbox = login()
 			if mailbox:
 				print 'Login success'
-				print "[+] Receiving expected email"
+				print "[+] Getting the expected email"
 				if readMail(mailbox):
 					mailbox.quit()
 					print 'Logged out'
 					break
 				else:
-					print "[+] The expected email didn't arrive"
+					print "[+] The expected email hasn't arrived"
 
 				mailbox.quit()
 				print 'Logged out'
-		except:
+		except Exception as e:
+			print ("Exception: " + str(e))
 			print 'Login failed'
 			time.sleep(3)
-
+	exit()
 	# xoa dau vet
 	time.sleep(120)
 	print 'Destroying evidence'
@@ -139,7 +148,6 @@ def main():
 
 	print 'Done'
 
-#main()
 def test():
 	try:
 		mailbox = login()
@@ -148,6 +156,6 @@ def test():
 		else:
 			print ("Failed")
 	except Exception as e:
-		print (e)
+		print ("Exception: " + str(e))
 
 main()
