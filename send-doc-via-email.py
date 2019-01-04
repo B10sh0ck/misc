@@ -9,24 +9,9 @@ from email.MIMEBase import MIMEBase
 from email import Encoders
 import random
 
-def wait(t):
-	while True:
-		try:
-			r = urllib2.urlopen('http://192.168.100.169/isAttack/KB15_macro')
-			if (int(r.read()) != 0):
-				break
-		except:
-			pass
-		time.sleep(t)
-	return
-
 def main():
 	path = '/root/saigon2/KB_MaDoc/2'
 	os.chdir(path)
-
-	#print 'Waiting for start command'
-	#wait(5)
-	#print 'Revc start command'
 
 	userlist = ['nhanvien01@dientap.cnsc', 'nhanvien02@dientap.cnsc', 'nhanvien03@dientap.cnsc', 'nhanvien04@dientap.cnsc', 'nhanvien05@dientap.cnsc', 'nhanvien06@dientap.cnsc', 'nhanvien07@dientap.cnsc', 'nhanvien08@dientap.cnsc', 'nhanvien09@dientap.cnsc', 'nhanvien10@dientap.cnsc', 'hieu@dientap.cnsc', 'vuong@dientap.cnsc']
 	#userlist = ['nhanvien05@dientap.cnsc']

